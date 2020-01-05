@@ -36,7 +36,7 @@ require_once __DIR__ . "/api/shortUrl.php";
                 <h1>Kurz-URL-Dienst</h1>
                 <p class='desc'>Ein Service von <a href='https://oproj.de'>oproj.de.</a></p>
             </header>
-            <a class='button' href="<?php echo $CONFIG["odmin_base_url"] ?>/login?service=osurl" >Anmelden<a>
+            <a class='button' href="<?php echo $CONFIG["odmin_base_url"] ?>/login?service=<?php echo $CONFIG["odmin_service_name"] ?>" >Anmelden<a>
             <a class='imprint' href='https://oproj.de/privacy'>Privacy & Imprint</a>
         </main>
 
@@ -80,7 +80,7 @@ require_once __DIR__ . "/api/shortUrl.php";
     
     <?php else: ?>
 
-        <a class='logout' href='<?php echo $CONFIG["odmin_base_url"] ?>/api/logout/<?php echo $_COOKIE["token"] ?>?service=osurl'>Logout</a>
+        <a class='logout' href='<?php echo $CONFIG["odmin_base_url"] ?>/api/logout/<?php echo $_COOKIE["token"] ?>?service=<?php echo $CONFIG["odmin_service_name"] ?>'>Logout</a>
 
         <main class='form'>
             <form action='/'  method='post'>
