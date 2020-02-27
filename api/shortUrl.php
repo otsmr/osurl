@@ -1,6 +1,5 @@
 <?php
 
-$logged = false;
 $rand = false;
 
 $baseUrl = "https://".$_SERVER["HTTP_HOST"];

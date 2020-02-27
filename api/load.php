@@ -4,6 +4,9 @@
  * Session wird initialisiert
  */
 
+$logged = false;
+$userID = null;
+
  
 ini_set('session.cookie_domain', '.' . $_SERVER["SERVER_NAME"] );
 session_name('sid');
@@ -19,6 +22,13 @@ require_once(__DIR__ . "/../config.php");
 function startsWith($haystack, $needle) {
     return (substr($haystack, 0, strlen($needle)) === $needle);
 }
+function endsWith($haystack, $needle) {
+    $length = strlen($needle);
+    if ($length == 0) {
+        return true;
+    }
+    return (substr($haystack, -$length) === $needle);
+}
 
 function random($l = 4, $c = "abcdefghijklmnopqrstuvwxyz0123456789") {
     for ($s = '', $i = 0, $z = strlen($c)-1; $i < $l; $x = rand(0,$z), $s .= $c{$x}, $i++);
@@ -32,13 +42,24 @@ function clean($string) {
  }
 
 function isInDB() {
+    global $logged, $userID;
 
     if(!isset($_GET["url"])) return false;
+
+    $displayLogs = false;
+
+    if ($logged && endsWith($_GET["url"], "*")) {
+        $displayLogs = true;
+    }
 
     $db = new \DB();
     $urlID = clean($db->check($_GET["url"]));
 
     $url = $db->get("SELECT * FROM `urls` WHERE urlID = '$urlID' ");
+
+    if ($displayLogs && $url["userID"] != $userID) {
+        $displayLogs = false;
+    }
 
     if(!$url["ID"]) {
         header("Location: /");
@@ -52,14 +73,32 @@ function isInDB() {
     if (!startsWith($url["link"], "http://") && !startsWith($url["link"], "https://") ){
         $url["link"] = "http://" . $url["link"];
     }
+
+    $logPath = __DIR__ . '/../log/'.$urlID.'.count';
+
+    if ($displayLogs) {
+
+        $content = "Noch keine Daten vorhanden.";
+        if (file_exists($logPath)) {
+            try {
+                $content = @file_get_contents($logPath);
+            } catch (Exception $e) { }
+        }
+
+        header('Content-Type: text/plain');
+
+        die($content);
+
+    } else {
+
+        $fp = @fopen($logPath, 'a');
+        @fwrite($fp, date('d.m.Y H:i:s') . "\t" . $_SERVER['REMOTE_ADDR'] . "\r\n" );
+        @fclose($fp);
     
-    $fp = @fopen(__DIR__ . '/../log/'.$urlID.'.txt', 'a');
-    @fwrite($fp, date('d.m.Y H:i:s') . "\t" . md5($_SERVER['REMOTE_ADDR'] . "540894065480") . "\r\n" );
-    @fclose($fp);
+        header("Location: " . $url["link"]);
 
-    // https://osurl.de/log/ago1.txt
-
-    header("Location: " . $url["link"]);
+    }
+    
     die();
     
 }
