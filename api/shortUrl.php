@@ -27,7 +27,7 @@ if(isset($_COOKIE['token'])){
 
 $url = isInDB();
 
-if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["link"]) && $_POST["link"] !== "" && $logged) {
+if($logged && $_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["link"]) && $_POST["link"] !== "") {
 
     $db = new DB();
     $time = 0;
@@ -40,7 +40,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["link"]) && $_POST["lin
     else $pass = "";
 
     if ($custom !== "") {
-        if ($db->get("SELECT * FROM urls WHERE urlID = '$custom'")) {
+        if ($db->get("SELECT * FROM shorturls WHERE urlID = '$custom'")) {
             $rand = "error";
         } else {
             $rand = false;
@@ -51,7 +51,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["link"]) && $_POST["lin
         if ($rand) {
             while(1){
                 $rand = random();
-                if(!$db->get("SELECT * FROM urls WHERE urlID = '$rand'")) {
+                if(!$db->get("SELECT * FROM shorturls WHERE urlID = '$rand'")) {
                     break;
                 }
                 $time++;
@@ -61,7 +61,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["link"]) && $_POST["lin
             $rand = $custom;
         }
     
-        if(!$db->set("INSERT INTO urls (urlID, userID, pass, link) VALUES ('$rand', '$userID', '$pass', '$link')")) {
+        if(!$db->set("INSERT INTO shorturls (urlID, userID, pass, link) VALUES ('$rand', '$userID', '$pass', '$link')")) {
             $rand = "error";
         }
     }

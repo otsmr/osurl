@@ -39,66 +39,90 @@ function clean($string) {
     $string = str_replace(' ', '-', $string);
     $string = strtolower($string);
     return preg_replace('/[^A-Za-z0-9\-]/', '', $string);
- }
+}
+
+function getIpAddress() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        return trim($ips[count($ips) - 1]);
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+function getLocationFromIP () {
+
+    $postData = array(
+        'ip' => getIpAddress()
+    );
+
+    $ch = curl_init('https://ipinfo.oproj.de/api/ip');
+    curl_setopt_array($ch, array(
+        CURLOPT_POST => TRUE,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+        ),
+        CURLOPT_POSTFIELDS => json_encode($postData)
+    ));
+    $response = curl_exec($ch);
+
+    if($response === FALSE){
+        return null;
+    }
+
+    try {
+        return json_decode($response, TRUE);
+    } catch (\Throwable $th) {
+        return null;
+    }
+
+}
 
 function isInDB() {
-    global $logged, $userID;
+    global $logged, $userID, $pages;
 
     if(!isset($_GET["url"])) return false;
 
-    $displayLogs = false;
-
-    if ($logged && endsWith($_GET["url"], "*")) {
-        $displayLogs = true;
-    }
-
+    if (in_array($_GET["url"], $pages)) return $_GET["url"];
+    
     $db = new \DB();
     $urlID = clean($db->check($_GET["url"]));
 
-    $url = $db->get("SELECT * FROM `urls` WHERE urlID = '$urlID' ");
+    $url = $db->get("SELECT * FROM `shorturls` WHERE urlID = '$urlID' ");
 
-    if ($displayLogs && $url["userID"] != $userID) {
-        $displayLogs = false;
-    }
-
-    if(!$url["ID"]) {
+    if(!$url["urlID"]) {
         header("Location: /");
         die();
     }
 
     if($url["pass"] !== "" && (!isset($_POST["passProt"]) || !password_verify($_POST["passProt"], $url["pass"]))) {
-        return "needPass";
+        return "needpass";
     }
 
     if (!startsWith($url["link"], "http://") && !startsWith($url["link"], "https://") ){
         $url["link"] = "http://" . $url["link"];
     }
-
-    $logPath = __DIR__ . '/../log/'.$urlID.'.count';
-
-    if ($displayLogs) {
-
-        $content = "Noch keine Daten vorhanden.";
-        if (file_exists($logPath)) {
-            try {
-                $content = @file_get_contents($logPath);
-            } catch (Exception $e) { }
-        }
-
-        header('Content-Type: text/plain');
-
-        die($content);
-
-    } else {
-
-        $fp = @fopen($logPath, 'a');
-        @fwrite($fp, date('d.m.Y H:i:s') . "\t" . $_SERVER['REMOTE_ADDR'] . "\r\n" );
-        @fclose($fp);
     
-        header("Location: " . $url["link"]);
+    $ip_hashed = md5(getIpAddress() . "dwß9g3jkbdjasbd938eueiqhdkjebf910302389");
+    
+    $location = getLocationFromIP();
+
+    if (!is_null($location)) {
+
+        $city = $db->check($location["zipcode"] . " " .$location["city"]);
+        $region = $db->check($location["region"]);
+        $country = $db->check($location["country_short"] . " - " . $location["country_long"]);
+        $latitude = (float) $location["latitude"];
+        $longitude = (float) $location["longitude"];
+
+        $db->set("INSERT INTO `stats` (urlID, city, region, country, latitude, longitude, ip_hashed) VALUES ('$urlID', '$city', '$region', '$country', '$latitude', '$longitude', '$ip_hashed')");
 
     }
     
+    header("Location: " . $url["link"]);
     die();
     
 }
