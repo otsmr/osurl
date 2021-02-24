@@ -1,12 +1,14 @@
 <?php
-error_reporting(-1);
 
 $pages = [
     "statistics",
     "needpass"
 ];
 
-require_once __DIR__ . "/api/shortUrl.php";
+require_once "config.php";
+require_once "api/odmin/init.php";
+require_once "api/short-url.php";
+
 
 $footer = "<ul>
 <a target='_blank' href='https://github.com/otsmr/osurl'>
@@ -40,8 +42,9 @@ $footer = "<ul>
     if (in_array($url, $pages)) {
         require_once "./pages/$url.php";
     }
-    else if(!$logged) require_once "./pages/startpage.php";
-
+    else if(!$odmin->is_logged_in()) {
+        require_once "./pages/startpage.php";
+    }
     else if($rand && $rand !== "error"): ?>
 
         <main class='form' style='height: 202px; max-width: 365px;'>
@@ -57,7 +60,7 @@ $footer = "<ul>
     <?php else: ?>
 
         <main class='form'>
-            <form action='/'  method='post'>
+            <form action='/' method='post'>
                 <header>
                     <h1>Kurz-URL-Dienst</h1>
                     <?php if ($rand === "error"): ?>
@@ -75,10 +78,11 @@ $footer = "<ul>
     <?php endif; ?>
 
 
-    <?php if ($logged): ?>
-        <a class='logout' href='<?php echo $CONFIG["odmin_base_url"] ?>/api/logout/<?php echo $_COOKIE["token"] ?>?service=<?php echo $CONFIG["odmin_service_name"] ?>'>Logout</a>
+    <?php if ($odmin->is_logged_in()): ?>
+        <a class='logout' href='<?php echo $odmin->get_signout_url(); ?>'>Abmelden</a>
     <?php endif; ?>
 
     <script src="assets/main.js"></script>
+
 </body>
 </html>

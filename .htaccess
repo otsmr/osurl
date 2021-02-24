@@ -1,15 +1,3 @@
-BrowserMatch "MSIE 11.0;" allow_sniff
-
-Header set X-Content-Type-Options: nosniff env=!allow_sniff
-Header set X-XSS-Protection  0
-
-Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
-
-<Files  ~ "\.count$">
-  Order allow,deny
-  Deny from all
-</Files>
-
 RewriteEngine On
 RewriteBase /
 
