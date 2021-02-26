@@ -70,6 +70,14 @@ $footer = "<ul>
                 <input autofocus name='link' placeholder='Link' required>
                 <input name='custom' placeholder='Individuelle Kurz-Url' type="text">
                 <input name='pass' placeholder='Passwort' type='password'>
+                <div class="flex">
+                    <div>
+                        <input type="checkbox" name="enable-statistics" id="a">
+                    </div>
+                    <label for="a">
+                        Statistik für diesen Link aktivieren
+                    </label>
+                </div>
                 <button class='button' type='submit'>Erstellen</button>
             </form>
             <?php echo $footer; ?>
