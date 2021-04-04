@@ -60,7 +60,7 @@ function endsWith($haystack, $needle) {
 }
 
 function random($l = 4, $c = "abcdefghijklmnopqrstuvwxyz0123456789") {
-    for ($s = '', $i = 0, $z = strlen($c)-1; $i < $l; $x = rand(0,$z), $s .= $c{$x}, $i++);
+    for ($s = '', $i = 0, $z = strlen($c)-1; $i < $l; $x = rand(0,$z), $s .= $c[$x], $i++);
     return $s;
 }
 
