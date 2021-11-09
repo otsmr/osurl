@@ -4,11 +4,11 @@ namespace ODMIN {
 
     class OAuth {
 
-        private string $secret;
-        private string $service_id;
-        private string $api_base;
+        // private string $secret;
+        // private string $service_id;
+        // private string $api_base;
 
-        public object $session;
+        // public object $session;
 
         public function __construct (object $config) {
 

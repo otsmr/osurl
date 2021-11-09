@@ -1,0 +1,37 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:latest
+    container_name: osurl_mysql
+    volumes:
+      - ./docker-data/mysql/:/var/lib/mysql
+    ports:
+      - 4001:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: osurl_phpmyadmin
+    ports:
+      - 4000:80
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./docker-data/phpmyadmin/:/sessions
+    depends_on:
+      - db
+  osurl:
+    depends_on:
+      - db
+    build: ./
+    image: osurl
+    restart: always
+    container_name: osurl
+    ports:
+      - 5000:80
+    volumes: 
+      - ./:/var/www/html/
