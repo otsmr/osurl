@@ -4,5 +4,5 @@
         <p class='desc'>Ein Service von <a href='https://oproj.de'>oproj.de.</a></p>
     </header>
     <a href="<?php echo $odmin->get_signin_url(); ?>" ><button class="button center">Anmelden</button><a>
-    <?php echo $footer; ?>
+    <?php include "../includes/footer.php" ?>
 </main>

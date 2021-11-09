@@ -2,25 +2,13 @@
 
 $pages = [
     "statistics",
-    "needpass"
+    "needpass",
+    "manage"
 ];
 
 require_once "config.php";
 require_once "api/odmin/init.php";
 require_once "api/short-url.php";
-
-
-$footer = "<ul>
-<a target='_blank' href='https://github.com/otsmr/osurl'>
-    <li>Projekt auf Github</li>
-</a>
-<a target='_blank' href='https://oproj.de/privacy'>
-    <li>Datenschutz</li>
-</a>
-<a target='_blank' href='https://oproj.de/imprint'>
-    <li>Impressum</li>
-</a>
-</ul>";
 
 ?>
 
@@ -39,56 +27,21 @@ $footer = "<ul>
 
     <?php
 
-    if (in_array($url, $pages)) {
-        require_once "./pages/$url.php";
-    }
-    else if(!$odmin->is_logged_in()) {
+    if ($odmin->is_logged_in()) {
+
+        if (in_array($url, $pages)) {
+            require_once "./pages/$url.php";
+        } 
+        else require_once "./pages/create-new-link.php";
+    
+        ?>
+        <a class='logout' href='<?php echo $odmin->get_signout_url(); ?>'>Abmelden</a>
+        <?php
+
+    } else {
         require_once "./pages/startpage.php";
     }
-    else if($rand && $rand !== "error"): ?>
-
-        <main class='form' style='height: 202px; max-width: 365px;'>
-            <header>
-                <h1>Kurz-URL:</h1>
-            </header>
-            <div onclick='copyToClipboard("https://osurl.de/<?php echo $rand;?>", this)' class='link'>osurl.de/<?php echo $rand;?></div>
-            <br>
-            <a href='/'>Einen weiteren Link kürzen.</a>
-            <?php echo $footer; ?>
-        </main>
-
-    <?php else: ?>
-
-        <main class='form'>
-            <form action='/' method='post'>
-                <header>
-                    <h1>Kurz-URL-Dienst</h1>
-                    <?php if ($rand === "error"): ?>
-                        <p>Kurz-URL nicht verfügbar</p>
-                    <?php endif;?>
-                </header>
-                <input autofocus name='link' placeholder='Link' required>
-                <input name='custom' placeholder='Individuelle Kurz-Url' type="text">
-                <input name='pass' placeholder='Passwort' type='password'>
-                <div class="flex">
-                    <div>
-                        <input type="checkbox" name="enable-statistics" id="a">
-                    </div>
-                    <label for="a">
-                        Statistik für diesen Link aktivieren
-                    </label>
-                </div>
-                <button class='button' type='submit'>Erstellen</button>
-            </form>
-            <?php echo $footer; ?>
-        </main>
-    
-    <?php endif; ?>
-
-
-    <?php if ($odmin->is_logged_in()): ?>
-        <a class='logout' href='<?php echo $odmin->get_signout_url(); ?>'>Abmelden</a>
-    <?php endif; ?>
+    ?>
 
     <script src="assets/main.js"></script>
 

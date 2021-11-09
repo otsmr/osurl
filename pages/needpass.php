@@ -6,6 +6,6 @@
         <input autofocus name='passProt' placeholder='Passwort' type='password'>
 
         <button class='button' type='submit'>Weiter</button>
-        <?php echo $footer; ?>
+        <?php include "../includes/footer.php" ?>
     </form>
 </main>

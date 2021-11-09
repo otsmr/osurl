@@ -28,15 +28,20 @@ if(
     $link = $db->check((string) $_POST["link"]);
     $custom = clean($db->check((string) $_POST["custom"]));
 
-    if($_POST["pass"] !== "")
-        $pass = password_hash((string) $_POST["pass"], PASSWORD_BCRYPT);
-
-    if ($custom !== "") {
-        if ($db->get("SELECT * FROM shorturls WHERE urlID = '$custom'")) 
-            $rand = "error";
-        else 
-            $rand = false;
+    if (filter_var($link, FILTER_VALIDATE_URL) === FALSE) {
+        $rand = "error";
+    } else {
+        if($_POST["pass"] !== "")
+            $pass = password_hash((string) $_POST["pass"], PASSWORD_BCRYPT);
+    
+        if ($custom !== "") {
+            if ($db->get("SELECT * FROM shorturls WHERE urlID = '$custom'")) 
+                $rand = "error";
+            else 
+                $rand = false;
+        }
     }
+
 
     if ($rand !== "error") {
 

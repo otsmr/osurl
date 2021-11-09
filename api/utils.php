@@ -42,7 +42,19 @@ function is_url_in_db(string $url) {
     }
     
     http_response_code(307);
-    header("Location: " . $db_url["link"]);
+    if ($_SERVER['REQUEST_METHOD'] === "POST") {
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta http-equiv = "refresh" content = "0; url = <?php echo $db_url['link']; ?>" />
+            <title>Weiterleiten</title>
+        </head>
+        <body> </body> </html>
+        <?php
+    } else {
+        header("Location: " . $db_url["link"]);
+    }
     die();
     
 }
