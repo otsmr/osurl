@@ -1,4 +1,5 @@
 function copyToClipboard(text, e) {
+    
     if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
         const textarea = document.createElement("textarea");
         textarea.textContent = text;

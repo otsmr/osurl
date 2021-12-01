@@ -27,6 +27,32 @@ body main{
     border-radius: 6px;
 }
 
+body nav {
+    border: 1px solid #666;
+    color: #bbb;
+    border-radius: 6px;
+    position: absolute;
+    transform: translate(-50%);
+    left: 50%;
+    top: 15px;
+    overflow: hidden;
+}
+
+body nav ul {
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+
+body nav ul a {
+    padding: 17px 19px;
+    color: #aaa;
+    text-decoration: none;
+}
+body nav ul a:hover {
+    background: #191919;
+}
+
 body .button{
     border: 0;
     padding: 7px 14px;
@@ -146,4 +172,30 @@ main ul li {
     color: #444;
     display: inline-block;
     margin: 0 7px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    margin-top: 150px;
+    border: 1px solid #666;
+    color: #bbb;
+    border-radius: 6px;
+    padding: 20px 15px;
+    overflow: auto;
+    max-height: 60vh;
+}
+
+table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+table th {
+    padding: 10px;
+}
+table td {
+    padding: 5px;
+    padding: 5px 10px;
 }

@@ -1,14 +1,33 @@
 <?php
 
-$pages = [
-    "statistics",
-    "needpass",
-    "manage"
+$status = [
+    "error_message" => "",
+    "shorten_url" => ""
 ];
 
-require_once "config.php";
+$url = "";
+if (isset($_GET["url"]))
+    $url = (string) $_GET["url"];
+    
+$pages = [
+    "statistics",
+    "password-request",
+    "manage-urls"
+];
+
+if ($url !== "" && !in_array($url, $pages)) {
+    require_once "api/redirect.php";
+}
+
 require_once "api/odmin/init.php";
-require_once "api/short-url.php";
+$odmin->init_session_from_cookie();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $odmin->is_logged_in()) {
+
+    if (isset($_POST["link"]) && $_POST["link"] !== "") {
+        require_once "api/short-url.php";
+    }
+}
 
 ?>
 
@@ -29,17 +48,19 @@ require_once "api/short-url.php";
 
     if ($odmin->is_logged_in()) {
 
+        include __DIR__ . "/includes/nav.php";
+
         if (in_array($url, $pages)) {
-            require_once "./pages/$url.php";
+            require_once __DIR__ . "/pages/$url.php";
         } 
-        else require_once "./pages/create-new-link.php";
+        else require_once __DIR__ . "/pages/create-new-link.php";
     
         ?>
         <a class='logout' href='<?php echo $odmin->get_signout_url(); ?>'>Abmelden</a>
         <?php
 
     } else {
-        require_once "./pages/startpage.php";
+        require_once __DIR__ . "/pages/startpage.php";
     }
     ?>
 
