@@ -25,7 +25,6 @@ if ($dburl["pass"] !== "" && (!isset($_POST["passProt"]) || !password_verify((st
     if ($dburl["stats"] == 1) {
 
         $ip = get_ip_address();
-        $ip = "1.1.1.1";
         $l = get_location_from_ip($ip);
     
         if (!is_null($l)) {
