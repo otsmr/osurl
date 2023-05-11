@@ -3,31 +3,64 @@ version: '3.9'
 services:
 
   osurl_db:
-    image: mysql:5.7
-    ports:
-      - 4001:3306
+    image: mariadb:10.6
+    labels:
+      - traefik.enable=false
+    volumes:
+      - ./data/osurl/mysql:/var/lib/mysql
+    env_file:
+      - ./global.env
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: osurl
       MYSQL_USER: osurl
       MYSQL_PASSWORD: osurl
+    networks:
+      - osurlnet
 
-  # osurl_phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin
-  #   ports:
-  #     - 4002:80
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #   depends_on:
-  #     - osurl_db
-
-  osurl:
+  osurl_phpmyadmin:
     build:
-      context: ./projects/osurl
-    image: osurl
-    ports:
-      - 4003:80
+      context: ./services/phpmyadmin/
+    labels:
+      - traefik.http.routers.osurl_phpmyadmin.rule=Host(`osurl.test`) && PathPrefix(`/phpmyadmin`)
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: osurl_db
     volumes:
-      - ./projects/osurl/app:/var/www/html
+      - ./data/osurl/phpmyadmin/:/sessions
+    profiles:
+      - debug
     depends_on:
       - osurl_db
+    networks:
+      - osurlnet
+      - default
+
+  osurl_web:
+    image: nginx:alpine
+    restart: always
+    depends_on:
+      - osurl_fpm
+    volumes:
+      - ./projects/osurl/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./data/osurl/nginx/:/var/log/nginx/:z
+    volumes_from:
+      - osurl_fpm
+    labels:
+      - traefik.http.routers.osurl.rule=Host(`osurl.local`)
+    networks:
+      - default
+      - osurlnet
+
+  osurl_fpm:
+    build:
+      context: ./projects/osurl/
+    labels:
+      - traefik.enable=false
+    networks:
+      - osurlnet
+    volumes:
+      - ./projects/osurl/src:/var/www/html:z
+
+networks:
+  osurlnet:
+
