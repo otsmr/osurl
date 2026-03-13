@@ -1,3 +1,10 @@
+<?php
+if (basename(__FILE__) == basename($_SERVER['SCRIPT_FILENAME'])) {
+    header("Location: /");
+    die();
+}
+?>
+
 <main class='form' style='height: 202px; max-width: 365px;'>
     <form method='post'>
         <header>

@@ -26,6 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $odmin->is_logged_in()) {
 
     if (isset($_POST["link"]) && $_POST["link"] !== "") {
         require_once "api/short-url.php";
+
+        $link = (string) $_POST["link"];
+        $custom = clean_url_id((string) $_POST["custom"]);
+        $userID = (int) $odmin->session->user_id;
+
+        $status = create_shorten_link((string) $_POST["link"], $custom, $userID);
     }
 }
 

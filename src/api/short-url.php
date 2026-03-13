@@ -75,8 +75,3 @@ function create_shorten_link (string $link, string $custom, $userID) {
 
 }
 
-$link = (string) $_POST["link"];
-$custom = clean_url_id((string) $_POST["custom"]);
-$userID = (int) $odmin->session->user_id;
-
-$status = create_shorten_link((string) $_POST["link"], $custom, $userID);
